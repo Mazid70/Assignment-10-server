@@ -39,6 +39,11 @@ app.post("/userspot", async (req, res) => {
   console.log(newSpot);
   res.send(result);
 });
+app.get("/userspot", async (req, res) => {
+  const cursor = userTouristSpot.find();
+  const result = await cursor.toArray();
+  res.send(result);
+});
 
     await client.connect();
     // Send a ping to confirm a successful connection
