@@ -44,7 +44,12 @@ app.get("/userspot", async (req, res) => {
   const result = await cursor.toArray();
   res.send(result);
 });
-
+app.get("/userspot/:email", async (req, res) => {
+  const email = req.params.email;
+  const query = { user_email:email };
+  const result = await userTouristSpot.findOne(query);
+  res.send(result);
+});
     await client.connect();
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
