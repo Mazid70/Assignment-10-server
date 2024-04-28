@@ -24,6 +24,15 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
    
+    const touristSpots = client.db("tourist_spotsDB").collection("spots")
+    
+    app.get("/spot", async (req, res) => {
+      const cursor = touristSpots.find();
+      const result = await cursor.toArray();
+      res.send(result);
+});
+
+
 
     await client.connect();
     // Send a ping to confirm a successful connection
