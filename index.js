@@ -4,7 +4,14 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 3000;
-app.use(cors({ origin: ["http://localhost:5174", "live link url"] }));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5174",
+      "https://mazid-assignment-10.netlify.app",
+    ],
+  })
+);
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_ID}:${process.env.DB_PASS}@cluster0.p4xzv3m.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -20,6 +27,9 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    const countyTouristSpots = client
+      .db("country_tourist_spotsDB")
+      .collection("country_spots");
     const touristSpots = client.db("tourist_spotsDB").collection("spots");
     const userTouristSpot = client
       .db("user_tourist_spotsDB")
@@ -45,6 +55,12 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await userTouristSpot.findOne(query);
+      res.send(result);
+    });
+    app.get("/allspot/:country/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await countyTouristSpots.findOne(query);
       res.send(result);
     });
     app.delete("/userspot/user/:email/:id", async (req, res) => {
@@ -92,7 +108,13 @@ async function run() {
       const result = await userTouristSpot.find(query).toArray();
       res.send(result);
     });
-    await client.connect();
+    app.get("/allspot/:country", async (req, res) => {
+      const country = req.params.country;
+      const query = { country_name: country };
+      const result = await countyTouristSpots.find(query).toArray();
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
